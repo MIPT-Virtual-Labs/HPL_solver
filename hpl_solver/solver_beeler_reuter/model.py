@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import math
 
 def calculate_alpha_m(V):
@@ -56,23 +54,23 @@ def calculate_E_s(u, p, t, a):
     a["E_s"] = -82.3 - (13.0287 * np.log(u["Cai"] * 0.001))
 
 def calculate_i_s(u, p, t, a):
-    a["i_s"] = p["g_s"] * u["d"] * u["f"] * (u["V"] - a["E_s"])
+    a["i_s"] = p.g_s * u["d"] * u["f"] * (u["V"] - a["E_s"])
 
 def calculate_i_Na(u, p, t, a):
-    a["i_Na"] = (p["g_Na"] * u["m"]**3 * u["h"] * u["j"] + p["g_Nac"]) * (u["V"] - p["E_Na"])
+    a["i_Na"] = (p.g_Na * u["m"]**3 * u["h"] * u["j"] + p.g_Nac) * (u["V"] - p.E_Na)
 
 
 def calculate_i_x1(u, p, t, a):
     a["i_x1"] = u["x1"] * 8e-3 * (np.exp(0.004 * (u["V"]+ 77.)) - 1.) / (np.exp(0.04 * (u["V"]+ 35.)))
 
 def calculate_i_K1(u, p, t, a):
-    a["i_K1"] = 0.0035 * (4. * (np.exp(0.04 * (u["V"] + p["E_K"])) - 1) / (np.exp(0.08 * (u["V"] + 53.)) + 
+    a["i_K1"] = 0.0035 * (4. * (np.exp(0.04 * (u["V"] + p.E_K)) - 1) / (np.exp(0.08 * (u["V"] + 53.)) + 
                                                                 np.exp(0.04 * (u["V"]+ 53.)))
                       + 0.2 * (u["V"] + 23.) / (1 - np.exp(-0.04 * (u["V"] + 23.)))) 
 
 def calculate_Istim(u, p, t, a):
-    condition = (p["IstimStart"] <= t <= p["IstimEnd"] and (t - p["IstimStart"]) - math.floor((t - p["IstimStart"]) / p["IstimPeriod"]) * p["IstimPeriod"] <= p["IstimPulseDuration"])
-    a["Istim"] = p["IstimAmplitude"] if condition else 0.0
+    condition = (p.IstimStart <= t <= p.IstimEnd and (t - p.IstimStart) - math.floor((t - p.IstimStart) / p.IstimPeriod) * p.IstimPeriod <= p.IstimPulseDuration)
+    a["Istim"] = p.IstimAmplitude if condition else 0.0
 
 
 def calculate_algebraic(u, p, t, a):
@@ -115,7 +113,7 @@ def calculate_d_Cai(du, u, p, t, a):
 
 
 def calculate_d_V(du, u, p, t, a):
-    d_V = (a["Istim"] - (a["i_Na"] + a["i_s"] + a["i_x1"] + a["i_K1"])) / p["C"]
+    d_V = (a["Istim"] - (a["i_Na"] + a["i_s"] + a["i_x1"] + a["i_K1"])) / p.C
     return d_V
 
 
@@ -125,7 +123,7 @@ def calculate_rates(t, u, p, a, u_keys):
     du = dict.fromkeys(u_keys, 0)
     
     calculate_algebraic(u, p, t, a)
-    du["m"] = calculate_d_gate(u["m"], a["alpha_m"], a["beta_m"], p["m_scaler"])
+    du["m"] = calculate_d_gate(u["m"], a["alpha_m"], a["beta_m"], p.m_scaler)
     du["h"] = calculate_d_gate(u["h"], a["alpha_h"], a["beta_h"])
     du["j"] = calculate_d_gate(u["j"], a["alpha_j"], a["beta_j"])
     du["d"] = calculate_d_gate(u["d"], a["alpha_d"], a["beta_d"])

@@ -1,6 +1,8 @@
-from logging import error
+from typing import List, Optional
 from pydantic import BaseModel, ValidationError, validator
-from beeler_reuter import beeler_reuter
+from hpl_solver import beeler_reuter #, restitution
+
+
 
 class Error(BaseModel):
     error: str
@@ -23,8 +25,7 @@ class Response(BaseModel):
                 raise ValueError(f"status is not {st} but errors were found")
         if st == "failed" and "description" not in values:
             raise ValueError("status is set to `failed` but no description provided")
-        return st
-
+        return 
 
 def handle_request(request_json: dict) -> dict:
 
@@ -34,22 +35,31 @@ def handle_request(request_json: dict) -> dict:
         return response.dict()
 
     problem_name = request_json["problem"]
+    problems = {"beeler_reuter": beeler_reuter,
+                # "restitution": restitution
+                }
 
-    if problem_name != "beeler_reuter":
+    if problem_name not in problems:
         errors = [Error(error=f"Unknown problem: `{problem_name}`", field="problem")]
         response = Response(status="error", errors=errors)
         return response.dict()
-
-    args = request_json["args"]
+    
+    solver = problems[problem_name]
+    parameters = request_json["parameters"]
+    states = request_json["states"]
+    solver_parameters= request_json["solver_parameters"]
     
     try:
-        p = beeler_reuter.InputParameters(**args)
+        p = solver.InputParameters(**parameters)
+        y0 = solver.InputStates(**states)
+        solver_params = solver.SolverParameters(**solver_parameters)
     except ValidationError as ve:
         errors = [Error(error=e["msg"], field=e["loc"][0]) for e in ve.errors()]
         response = Response(status="error", errors=errors)
         return response.dict()
+
     try:
-        solution_dict = beeler_reuter.solve(p)
+        solution_dict = solver.solve(p, y0, solver_params)
     except Exception as e:
         response = Response(status="failed", description=str(e))
         return response.dict()
