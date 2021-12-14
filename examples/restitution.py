@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import plotly.io as pio
 
 from hpl_solver import handle_request
@@ -13,7 +15,7 @@ parameters = {
     "IstimStart": 0,
     "IstimEnd": 1e42,
     "IstimAmplitude": 0.1,
-    "IstimPeriod": 500,
+    "IstimPeriod": 1000,
     "IstimPulseDuration": 5,
 }
 
@@ -30,18 +32,25 @@ states = {
 
 model_name = "beeler_reuter"
 solver_options = {"t_span": [0, 2000], "method": "LSODA", "max_step": 0.5}
-request = dict(
-    problem="single_run",
-    args=dict(
-        model_name=model_name,
-        states=states,
-        parameters=parameters,
-        solver_options=solver_options,
-    ),
+
+args_1 = dict(
+    model_name=model_name,
+    states=states,
+    parameters=parameters,
+    solver_options=solver_options,
 )
+
+args_2 = deepcopy(args_1)
+args_2["parameters"]["IstimPeriod"] = 500
+
+args_3 = deepcopy(args_1)
+args_3["parameters"]["IstimPeriod"] = 333
+
+request = dict(problem="multiple_runs", args=[args_1, args_2, args_3])
+
 response = handle_request(request)
 if response["status"] != "done":
     print(response)
 else:
-    fig_dict = response["figures"][0]
-    pio.show(fig_dict)
+    for fig_dict in response["figures"]:
+        pio.show(fig_dict)

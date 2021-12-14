@@ -5,27 +5,6 @@ logger.setLevel(logging.INFO)
 
 import numpy as np
 
-a_syms = (
-    "alpha_m",
-    "beta_m",
-    "alpha_h",
-    "beta_h",
-    "alpha_j",
-    "beta_j",
-    "alpha_d",
-    "beta_d",
-    "alpha_f",
-    "beta_f",
-    "alpha_x1",
-    "beta_x1",
-    "E_s",
-    "i_s",
-    "i_Na",
-    "i_x1",
-    "i_K1",
-    "Istim",
-)
-
 
 def calculate_alpha_m(V):
     alpha_m = -1.0 * (V + 47.0) / (np.exp(-0.1 * (V + 47.0)) - 1)

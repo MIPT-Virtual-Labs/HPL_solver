@@ -1,8 +1,7 @@
-from pydantic import BaseModel, validator, root_validator
-from typing import Optional
+from pydantic import BaseModel, root_validator, validator
 
 
-class InputStates(BaseModel):
+class States(BaseModel):
 
     V: float
     m: float
@@ -34,7 +33,7 @@ class InputStates(BaseModel):
         return v
 
 
-class InputParameters(BaseModel):
+class Parameters(BaseModel):
 
     C: float
     g_Na: float
@@ -66,24 +65,22 @@ class InputParameters(BaseModel):
         return params
 
 
-class SolverParameters(BaseModel):
-
-    t_span: list
-    method: str
-    max_step: Optional[float] = 0.1
-
-    @validator("t_span")
-    def check_t_span(cls, t):
-        lb, ub = t
-        if lb >= ub:
-            raise ValueError(f"Incorrect value: {t}, {lb} should be smaller than {ub}]")
-        return t
-
-    @validator("method")
-    def check_method(cls, method):
-        method_list = ["RK45", "RK23", "DOP853", "Radau", "BDF", "LSODA"]
-        if method not in method_list:
-            raise ValueError(
-                f"Undefined method : {method}, must be one of the list {method_list}"
-            )
-        return method
+class Algebraics(BaseModel):
+    alpha_m: float = 0.0
+    beta_m: float = 0.0
+    alpha_h: float = 0.0
+    beta_h: float = 0.0
+    alpha_j: float = 0.0
+    beta_j: float = 0.0
+    alpha_d: float = 0.0
+    beta_d: float = 0.0
+    alpha_f: float = 0.0
+    beta_f: float = 0.0
+    alpha_x1: float = 0.0
+    beta_x1: float = 0.0
+    E_s: float = 0.0
+    i_s: float = 0.0
+    i_Na: float = 0.0
+    i_x1: float = 0.0
+    i_K1: float = 0.0
+    Istim: float = 0.0

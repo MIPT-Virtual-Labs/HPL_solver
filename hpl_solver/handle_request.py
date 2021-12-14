@@ -1,31 +1,7 @@
-from typing import List, Optional
-from pydantic import BaseModel, ValidationError, validator
-from hpl_solver import beeler_reuter  # , restitution
+from pydantic import ValidationError
 
-
-class Error(BaseModel):
-    error: str
-    field: str
-
-
-class Response(BaseModel):
-    errors: Optional[List[Error]]
-    description: Optional[str]
-    solution: Optional[dict]
-    figures: Optional[List[dict]]
-    status: str
-
-    @validator("status")
-    def validate_status(cls, st, values):
-        if st == "error":
-            if "errors" not in values:
-                raise ValueError("status is set to `error` but no errors provided")
-        else:
-            if "errors" in values and values["errors"]:
-                raise ValueError(f"status is not {st} but errors were found")
-        if st == "failed" and "description" not in values:
-            raise ValueError("status is set to `failed` but no description provided")
-        return st
+from .problems import multiple_runs, single_run
+from .response import Error, Response
 
 
 def handle_request(request_json: dict) -> dict:
@@ -36,33 +12,24 @@ def handle_request(request_json: dict) -> dict:
         return response.dict()
 
     problem_name = request_json["problem"]
-    problems = {
-        "beeler_reuter": beeler_reuter,
-        # "restitution": restitution
-    }
+
+    problems = {"single_run": single_run, "multiple_runs": multiple_runs}
 
     if problem_name not in problems:
         errors = [Error(error=f"Unknown problem: `{problem_name}`", field="problem")]
         response = Response(status="error", errors=errors)
         return response.dict()
 
-    solver = problems[problem_name]
-    parameters = request_json["parameters"]
-    states = request_json["states"]
-    solver_parameters = request_json["solver_parameters"]
+    problem = problems[problem_name]
+    args = request_json["args"]
 
     try:
-        p = solver.InputParameters(**parameters)
-        y0 = solver.InputStates(**states)
-        solver_params = solver.SolverParameters(**solver_parameters)
+        solution = problem.solve(args)
+        figures = problem.draw(solution)
     except ValidationError as ve:
         errors = [Error(error=e["msg"], field=e["loc"][0]) for e in ve.errors()]
         response = Response(status="error", errors=errors)
         return response.dict()
-
-    try:
-        solution = solver.solve(p, y0, solver_params)
-        figures = solver.draw(solution)
     except Exception as e:
         response = Response(status="failed", description=str(e))
         return response.dict()
