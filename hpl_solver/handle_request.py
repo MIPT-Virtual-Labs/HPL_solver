@@ -12,6 +12,7 @@ class Response(BaseModel):
     errors: Optional[List[Error]]
     description: Optional[str]
     solution: Optional[dict]
+    figures: Optional[List[dict]]
     status: str
 
     @validator("status")
@@ -24,7 +25,7 @@ class Response(BaseModel):
                 raise ValueError(f"status is not {st} but errors were found")
         if st == "failed" and "description" not in values:
             raise ValueError("status is set to `failed` but no description provided")
-        return
+        return st
 
 
 def handle_request(request_json: dict) -> dict:
@@ -60,11 +61,12 @@ def handle_request(request_json: dict) -> dict:
         return response.dict()
 
     try:
-        solution_dict = solver.solve(p, y0, solver_params)
+        solution = solver.solve(p, y0, solver_params)
+        figures = solver.draw(solution)
     except Exception as e:
         response = Response(status="failed", description=str(e))
         return response.dict()
 
-    response = Response(status="done", solution=solution_dict)
+    response = Response(status="done", figures=figures, solution=solution)
     response_dict = response.dict()
     return response_dict

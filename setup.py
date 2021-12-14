@@ -7,5 +7,5 @@ setup(
     url="https://github.com/MIPT-Virtual-Labs/HPL_solver.git",
     author="AbrashevaVeronika",
     author_email="8vero0810@gmail.com",
-    install_requires=["numpy", "pandas", "scipy", "pydantic", "json", "plotly"],
+    install_requires=["numpy", "pandas", "scipy", "pydantic", "plotly-express"],
 )

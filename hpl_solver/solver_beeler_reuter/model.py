@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 import numpy as np
 
 a_syms = (
@@ -120,6 +125,7 @@ def calculate_Istim(u, p, t, a):
         <= p.IstimPulseDuration
     )
     a["Istim"] = p.IstimAmplitude if condition else 0.0
+    logger.debug(f"time: {t}, Istim: {a['Istim']}")
 
 
 def calculate_algebraic(u, p, t, a):

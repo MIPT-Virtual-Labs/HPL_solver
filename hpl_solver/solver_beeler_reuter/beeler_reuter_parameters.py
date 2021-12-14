@@ -1,4 +1,5 @@
 from pydantic import BaseModel, validator, root_validator
+from typing import Optional
 
 
 class InputStates(BaseModel):
@@ -69,6 +70,7 @@ class SolverParameters(BaseModel):
 
     t_span: list
     method: str
+    max_step: Optional[float] = 0.1
 
     @validator("t_span")
     def check_t_span(cls, t):
