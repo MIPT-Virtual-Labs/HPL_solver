@@ -7,7 +7,8 @@ cd HPL_solver/
 ```
 ## Install
 ```
+pip install -r requirements.txt
 pip install -e .
 ```
 ## Examples
-Check out some [examples](https://github.com/MIPT-Virtual-Labs/HPL_solver/tree/main/examples) 
+Check out [examples](https://github.com/MIPT-Virtual-Labs/HPL_solver/tree/main/examples)
