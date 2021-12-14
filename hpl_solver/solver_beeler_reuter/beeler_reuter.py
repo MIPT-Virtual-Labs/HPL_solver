@@ -8,6 +8,8 @@ from hpl_solver.solver_beeler_reuter.beeler_reuter_parameters import (
     InputParameters,
     SolverParameters,
 )
+import plotly.express as px
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +32,8 @@ def solve(
     )
     solution = pd.DataFrame(res.y.T, columns=u_keys)
     solution["t"] = res.t
-    solution_dict = dict(solution)
 
-    return solution_dict
+    fig = px.line(solution, x="t", y="V")
+    solution_fig = json.loads(fig.to_json(pretty=True))
+
+    return solution_fig
