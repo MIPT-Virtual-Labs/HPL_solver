@@ -44,12 +44,11 @@ CLs = [2000, 1333, 1000, 666, 500, 333]
 args_list = []
 
 for CL in CLs:
-
     args = deepcopy(args_base)
     args["parameters"]["IstimPeriod"] = CL
     args_list.append(args)
 
-request = dict(problem="multiple_runs", args=args_list)
+request = dict(problem="restitution", args=args_list)
 
 response = handle_request(request)
 

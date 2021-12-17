@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 
-from .problems import multiple_runs, single_run
+from .problems import multiple_runs, restitution, single_run
 from .response import Error, Response
 
 
@@ -13,7 +13,11 @@ def handle_request(request_json: dict) -> dict:
 
     problem_name = request_json["problem"]
 
-    problems = {"single_run": single_run, "multiple_runs": multiple_runs}
+    problems = {
+        "single_run": single_run,
+        # "multiple_runs": multiple_runs,
+        "restitution": restitution,
+    }
 
     if problem_name not in problems:
         errors = [Error(error=f"Unknown problem: `{problem_name}`", field="problem")]
