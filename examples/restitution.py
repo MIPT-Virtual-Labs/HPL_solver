@@ -31,26 +31,36 @@ states = {
 }
 
 model_name = "beeler_reuter"
-solver_options = {"t_span": [0, 2000], "method": "LSODA", "max_step": 0.5}
+solver_options = {"t_span": [0, 10_000], "method": "LSODA", "max_step": 0.5}
 
-args_1 = dict(
+args_base = dict(
     model_name=model_name,
     states=states,
     parameters=parameters,
     solver_options=solver_options,
 )
 
-args_2 = deepcopy(args_1)
-args_2["parameters"]["IstimPeriod"] = 500
+CLs = [2000, 1333, 1000, 666, 500, 333]
+args_list = []
 
-args_3 = deepcopy(args_1)
-args_3["parameters"]["IstimPeriod"] = 333
+for CL in CLs:
 
-request = dict(problem="multiple_runs", args=[args_1, args_2, args_3])
+    args = deepcopy(args_base)
+    args["parameters"]["IstimPeriod"] = CL
+    args_list.append(args)
+
+request = dict(problem="multiple_runs", args=args_list)
 
 response = handle_request(request)
+
+import json
+
+# with open("tmp.json", "w") as f:
+#     f.write(json.dumps(response))
+
 if response["status"] != "done":
     print(response)
 else:
-    for fig_dict in response["figures"]:
+    for fig_json in response["figures"]:
+        fig_dict = json.loads(fig_json)
         pio.show(fig_dict)

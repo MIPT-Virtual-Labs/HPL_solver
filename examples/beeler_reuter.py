@@ -1,3 +1,5 @@
+import json
+
 import plotly.io as pio
 
 from hpl_solver import handle_request
@@ -43,5 +45,6 @@ response = handle_request(request)
 if response["status"] != "done":
     print(response)
 else:
-    fig_dict = response["figures"][0]
-    pio.show(fig_dict)
+    for fig_json in response["figures"]:
+        fig_dict = json.loads(fig_json)
+        pio.show(fig_dict)

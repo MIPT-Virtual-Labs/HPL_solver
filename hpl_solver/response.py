@@ -12,7 +12,7 @@ class Response(BaseModel):
     errors: Optional[List[Error]]
     description: Optional[str]
     solution: Optional[Union[dict, List[dict]]]
-    figures: Optional[List[dict]]
+    figures: Optional[List[str]]  # JSONs
     status: str
 
     @validator("status")

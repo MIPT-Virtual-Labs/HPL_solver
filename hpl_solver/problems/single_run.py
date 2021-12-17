@@ -33,8 +33,8 @@ def draw(solution: dict) -> List[dict]:
     logger.debug("start")
     df = pd.DataFrame(solution)
     fig = px.line(df, x="t", y="V")
-    fig_dict = fig.to_dict()
-    return [fig_dict]
+    fig_json = fig.to_json()
+    return [fig_json]
 
 
 def solve(args: dict) -> pd.DataFrame:
@@ -60,7 +60,7 @@ def solve(args: dict) -> pd.DataFrame:
         args=[parameters, algebraics, states_keys],
     )
 
-    solution = dict(zip(states_keys, res.y))
-    solution["t"] = res.t
+    solution = dict(zip(states_keys, res.y.tolist()))
+    solution["t"] = res.t.tolist()
 
     return solution
