@@ -40,7 +40,7 @@ args_base = dict(
     solver_options=solver_options,
 )
 
-CLs = [2000, 1333, 1000, 666, 500, 333]
+CLs = [2000, 1333, 1000, 666, 500]
 args_list = []
 
 for CL in CLs:
